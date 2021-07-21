@@ -44,7 +44,8 @@ exports.handler = async function(event, context) {
         profile,
         site,
         size,
-        price
+        price,
+        image
     } = headers;
     
     // Increment analytics/basic/checkouts
@@ -74,7 +75,8 @@ exports.handler = async function(event, context) {
         profile: profile,
         site: site,
         size: size,
-        price: price
+        price: price,
+        image: image
     }
     
     // Push to analytics/checkouts
@@ -85,12 +87,72 @@ exports.handler = async function(event, context) {
         },
         UpdateExpression: "set analytics.checkouts = :ch",
         ExpressionAttributeValues:{
-            ":ch": [...licenseObject.Item.analytics.checkouts, newCheckout],
+            ":ch": [newCheckout, ...licenseObject.Item.analytics.checkouts],
         },
         ReturnValues:"UPDATED_NEW"
     }
     
     let res2 = await docClient.update(pushToCheckoutsParams).promise()
+
+    // Send success discord webhook
+    try {
+        let payload = {
+            "content": null,
+            "embeds": [
+              {
+                "title": product,
+                "url": "https://amazon.com/",
+                "color": 5814783,
+                "fields": [
+                  {
+                    "name": "store",
+                    "value": site,
+                    "inline": true
+                  },
+                  {
+                    "name": "Size",
+                    "value": size,
+                    "inline": true
+                  },
+                  {
+                    "name": "Mode",
+                    "value": "Normal",
+                    "inline": true
+                  }
+                ],
+                "author": {
+                  "name": "Successful checkout!"
+                },
+                "footer": {
+                  "text": "Thaeta"
+                },
+                "timestamp": (new Date()).toISOString(),
+                "thumbnail": {
+                  "url": image
+                }
+              }
+            ],
+            "username": "Thaeta"
+        }
+
+        var data = qs.stringify({
+            'payload_json': JSON.stringify(payload)
+        });
+
+        let wh  = 'https://discord.com/api/webhooks/867494114903719936/rkhbOFvos0TlCR-KF2wk4N93HZZGhRFEMX8cmLzj9-yGJ3OnboM4Rz3cEu56YQ8SxvvT'
+
+        await axios({
+            method: 'post',
+            url: wh,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded', 
+            },
+            data : data
+        })
+    }
+    catch (err) {
+        console.error("Error posting success to discord")
+    }
     
     
     return {
