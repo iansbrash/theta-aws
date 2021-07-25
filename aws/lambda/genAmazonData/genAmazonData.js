@@ -56,7 +56,7 @@ const crack = () => {
             "captchainput": 0,
             "pow": 0
         },
-        "start": 1626561936760,
+        "start": starttime,
         "interaction": {
             "clicks": 1,
             "touches": 0,
@@ -84,7 +84,7 @@ const crack = () => {
         "performance": {
             "timing": {
                 "connectStart": starttime, 
-                "navigationStart": 1626561915605, // 0
+                "navigationStart": starttime, // 0
                 "loadEventEnd": starttime + 21009, // 21009
                 "domLoading": starttime + 219, // 219
                 "secureConnectionStart": 0,
@@ -261,6 +261,7 @@ const encode = (t) => {
 }
 
 const genMetadata = () => {
+   
 
     let sthahah = crack()
     let crc32 = calculate(sthahah)

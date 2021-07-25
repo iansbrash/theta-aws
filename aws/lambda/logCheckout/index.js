@@ -3,6 +3,8 @@ AWS.config.update({
     region: "us-east-1",
 });
 var docClient = new AWS.DynamoDB.DocumentClient();
+var axios = require('axios')
+var qs = require('qs')
 
 exports.handler = async function(event, context) {        
     console.log('Received event:', JSON.stringify(event, null, 2));
